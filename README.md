@@ -1,10 +1,10 @@
 # script-app
 
-Run python scripts within streamlit
+Create a simple app using the editor and scripts provided!
 
 ## Description
 
-Use this app to test following commands:
+Use this app to test pollination-streamlit-io components:
 * Send Model
 * Get Model
 * Send Geometry
