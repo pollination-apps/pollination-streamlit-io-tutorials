@@ -9,7 +9,7 @@ from pollination_streamlit_io import (
     select_run, select_study )
 
 st.set_page_config(
-    page_title='Direct Sun Hours',
+    page_title='Tutorial App',
     page_icon='https://app.pollination.cloud/favicon.ico',
     initial_sidebar_state='collapsed',
 )  # type: ignore
@@ -27,6 +27,10 @@ class Command(Enum):
     GET_GEOMETRY = 'Get Geometry'
     SEND_GEOMETRY = 'Send Geometry'
     SEL_ACCOUNT = 'Select Account'
+    SEL_PROJECT = 'Select Project'
+    SEL_RECIPE = 'Select Recipe'
+    SEL_STUDY = 'Select Study'
+    SEL_RUN = 'Select Run'
 
 SCRIPTS = {
     Command.GET_MODEL.value: pathlib.Path(TEMPLATES)
@@ -38,7 +42,15 @@ SCRIPTS = {
     Command.SEND_GEOMETRY.value: pathlib.Path(TEMPLATES)
         .joinpath('send_geometry.py').read_text(),
     Command.SEL_ACCOUNT.value: pathlib.Path(TEMPLATES)
-        .joinpath('sel_account.py').read_text()
+        .joinpath('sel_account.py').read_text(),
+    Command.SEL_PROJECT.value: pathlib.Path(TEMPLATES)
+        .joinpath('sel_project.py').read_text(),
+    Command.SEL_RECIPE.value: pathlib.Path(TEMPLATES)
+        .joinpath('sel_recipe.py').read_text(),
+    Command.SEL_STUDY.value: pathlib.Path(TEMPLATES)
+        .joinpath('sel_study.py').read_text(),
+    Command.SEL_RUN.value: pathlib.Path(TEMPLATES)
+        .joinpath('sel_run.py').read_text()
 }
 
 DOCS = {
@@ -46,7 +58,11 @@ DOCS = {
     Command.SEND_MODEL.value: send_hbjson.__doc__,
     Command.GET_GEOMETRY.value: get_geometry.__doc__,
     Command.SEND_GEOMETRY.value: get_geometry.__doc__,
-    Command.SEL_ACCOUNT.value: select_account.__doc__
+    Command.SEL_ACCOUNT.value: select_account.__doc__,
+    Command.SEL_PROJECT.value: select_project.__doc__,
+    Command.SEL_RECIPE.value: select_recipe.__doc__,
+    Command.SEL_STUDY.value: select_study.__doc__,
+    Command.SEL_RUN.value: select_run.__doc__
 }
 
 
@@ -54,7 +70,7 @@ def main():
     """Learning doing."""
 
     # title
-    st.header('Select a script!')
+    st.header('Select a tutorial!')
 
     # set tabs
     tab1, tab2 = st.tabs(["CAD interactions", "Cloud interactions"])
@@ -89,7 +105,11 @@ def main():
     with tab2:
         sel_option = st.selectbox(
             'Select a script to test',
-            (Command.SEL_ACCOUNT.value, ))
+            (Command.SEL_ACCOUNT.value, 
+            Command.SEL_PROJECT.value,
+            Command.SEL_RECIPE.value,
+            Command.SEL_STUDY.value,
+            Command.SEL_RUN.value))
         with st.expander(label='Docs', expanded=False):
             st.markdown(DOCS[sel_option])
         sel_script = st_ace(language="python", 
@@ -101,4 +121,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
