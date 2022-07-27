@@ -2,8 +2,11 @@ import pathlib
 from enum import Enum
 import streamlit as st
 from streamlit_ace import st_ace, THEMES
-from pollination_streamlit_io import ( get_geometry,
-    send_geometry, get_hbjson, send_hbjson )
+from pollination_streamlit.selectors import get_api_client
+from pollination_streamlit_io import ( 
+    get_geometry, send_geometry, get_hbjson, send_hbjson,
+    auth_user, select_account, select_project, select_recipe, 
+    select_run, select_study )
 
 st.set_page_config(
     page_title='Direct Sun Hours',
@@ -23,6 +26,7 @@ class Command(Enum):
     SEND_MODEL = 'Send Model'
     GET_GEOMETRY = 'Get Geometry'
     SEND_GEOMETRY = 'Send Geometry'
+    SEL_ACCOUNT = 'Select Account'
 
 SCRIPTS = {
     Command.GET_MODEL.value: pathlib.Path(TEMPLATES)
@@ -33,13 +37,16 @@ SCRIPTS = {
         .joinpath('get_geometry.py').read_text(),
     Command.SEND_GEOMETRY.value: pathlib.Path(TEMPLATES)
         .joinpath('send_geometry.py').read_text(),
+    Command.SEL_ACCOUNT.value: pathlib.Path(TEMPLATES)
+        .joinpath('sel_account.py').read_text()
 }
 
 DOCS = {
     Command.GET_MODEL.value: get_hbjson.__doc__,
     Command.SEND_MODEL.value: send_hbjson.__doc__,
     Command.GET_GEOMETRY.value: get_geometry.__doc__,
-    Command.SEND_GEOMETRY.value: get_geometry.__doc__
+    Command.SEND_GEOMETRY.value: get_geometry.__doc__,
+    Command.SEL_ACCOUNT.value: select_account.__doc__
 }
 
 
@@ -64,23 +71,33 @@ def main():
 
     # tabs layout
     with tab1:
-        option = st.selectbox(
+        mod_option = st.selectbox(
             'Select a script to test',
             (Command.SEND_MODEL.value, 
             Command.GET_MODEL.value,
             Command.SEND_GEOMETRY.value, 
             Command.GET_GEOMETRY.value))
         with st.expander(label='Docs', expanded=False):
-            st.markdown(DOCS[option])
-        content = st_ace(language="python", 
-            value=SCRIPTS[option], 
+            st.markdown(DOCS[mod_option])
+        mod_script = st_ace(language="python", 
+            value=SCRIPTS[mod_option], 
             auto_update=auto_update,
             font_size=font_size,
             theme=theme)
-        exec(content)
+        exec(mod_script)
 
     with tab2:
-        pass
+        sel_option = st.selectbox(
+            'Select a script to test',
+            (Command.SEL_ACCOUNT.value, ))
+        with st.expander(label='Docs', expanded=False):
+            st.markdown(DOCS[sel_option])
+        sel_script = st_ace(language="python", 
+            value=SCRIPTS[sel_option], 
+            auto_update=auto_update,
+            font_size=font_size,
+            theme=theme)
+        exec(sel_script)
 
 if __name__ == '__main__':
     main()
