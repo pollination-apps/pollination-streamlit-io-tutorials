@@ -57,7 +57,7 @@ DOCS = {
     Command.GET_MODEL.value: get_hbjson.__doc__,
     Command.SEND_MODEL.value: send_hbjson.__doc__,
     Command.GET_GEOMETRY.value: get_geometry.__doc__,
-    Command.SEND_GEOMETRY.value: get_geometry.__doc__,
+    Command.SEND_GEOMETRY.value: send_geometry.__doc__,
     Command.SEL_ACCOUNT.value: select_account.__doc__,
     Command.SEL_PROJECT.value: select_project.__doc__,
     Command.SEL_RECIPE.value: select_recipe.__doc__,

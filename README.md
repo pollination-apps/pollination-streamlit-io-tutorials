@@ -1,4 +1,4 @@
-# script-app
+# tutorial-app
 
 Create a simple app using the editor and scripts provided!
 
