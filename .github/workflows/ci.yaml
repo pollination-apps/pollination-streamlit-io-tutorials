@@ -23,6 +23,7 @@ jobs:
           echo "::set-output name=app-lowercase::$lowercase_repo_name"
           echo "::set-output name=app-name::$name_spaces"
     outputs:
+      app-lowercase: ${{ steps.generate_app_name.outputs.app-lowercase }}
       app-name: ${{ steps.generate_app_name.outputs.app-name }}
 
   test-docker:
