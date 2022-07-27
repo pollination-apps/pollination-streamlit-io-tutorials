@@ -103,6 +103,7 @@ def main():
         exec(mod_script)
 
     with tab2:
+        api_client = get_api_client()
         sel_option = st.selectbox(
             'Select a script to test',
             (Command.SEL_ACCOUNT.value, 

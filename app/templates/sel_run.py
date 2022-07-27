@@ -4,25 +4,11 @@ from pollination_streamlit_io import auth_user, select_account
 
 api_client = get_api_client()
 
-st.header("Authenticated User")
+user = auth_user('auth-user', api_client)
 
-acol1, acol2 = st.columns(2)
 
-with acol1:
-    user = auth_user('auth-user', api_client)
-    if user is not None:
-        st.json(user)
-
-with acol2:
-    account = select_account('select-account', api_client) or ''
-
-if account and 'name' in account:
-    st.subheader('Hi ' + account['name'] + ', select a project:')
-    owner = None
-    if 'username' in account:
-        owner = account['username']
-    elif 'account_name' in account:
-        owner = account['account_name']
+if user and 'username' in user:
+    st.subheader('Hi ' + user['username'] + ', select a project:')
 
     pcol1, pcol2 = st.columns(2)
 
@@ -30,7 +16,7 @@ if account and 'name' in account:
         project = select_project(
             'select-project',
             api_client,
-            project_owner=owner
+            project_owner=user['username']
         )
     with pcol2:
         st.json(project or '{}', expanded=False)
@@ -45,7 +31,7 @@ if account and 'name' in account:
                 'select-recipe',
                 api_client,
                 project_name=project['name'],
-                project_owner=owner
+                project_owner=user['username']
             )
         with rcol2:
             st.json(recipe or '{}', expanded=False)
@@ -60,7 +46,7 @@ if account and 'name' in account:
                 'select-study',
                 api_client,
                 project_name=project['name'],
-                project_owner=owner
+                project_owner=user['username']
             )
         with scol2:
             st.json(study or '{}', expanded=False)
