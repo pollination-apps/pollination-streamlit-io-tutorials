@@ -18,7 +18,7 @@ jobs:
           repo_name=${{ github.event.repository.name }}
           echo $repo_name
           lowercase_repo_name=${repo_name,,}
-          name_spaces = echo $lowercase_repo_name | sed 's/-/ /g' | sed 's/\w\+/\L\u&/g'
+          name_spaces=$(echo $lowercase_repo_name | sed 's/-/ /g' | sed 's/\w\+/\L\u&/g')
           echo $name_spaces
           echo "::set-output name=app-name::$lowercase_repo_name"
     outputs:
