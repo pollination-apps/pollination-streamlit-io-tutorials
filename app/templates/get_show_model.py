@@ -1,8 +1,7 @@
-import os, json
+import json
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 from honeybee.model import Model as HBModel
 from honeybee_vtk.model import Model as VTKModel

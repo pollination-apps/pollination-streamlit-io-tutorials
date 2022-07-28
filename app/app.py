@@ -1,8 +1,9 @@
 import pathlib
 from enum import Enum
+
 import streamlit as st
 from streamlit_ace import st_ace, THEMES
-from pollination_streamlit.selectors import get_api_client
+
 from pollination_streamlit_io import ( 
     get_geometry, send_geometry, get_hbjson, send_hbjson,
     select_account, select_project, select_recipe, 
