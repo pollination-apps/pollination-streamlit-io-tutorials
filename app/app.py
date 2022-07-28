@@ -31,6 +31,7 @@ class Command(Enum):
     SEL_RECIPE = 'Select Recipe'
     SEL_STUDY = 'Select Study'
     SEL_RUN = 'Select Run'
+    GET_SHOW_MODEL = 'Get and Show a Model'
 
 SCRIPTS = {
     Command.GET_MODEL.value: pathlib.Path(TEMPLATES)
@@ -50,7 +51,9 @@ SCRIPTS = {
     Command.SEL_STUDY.value: pathlib.Path(TEMPLATES)
         .joinpath('sel_study.py').read_text(),
     Command.SEL_RUN.value: pathlib.Path(TEMPLATES)
-        .joinpath('sel_run.py').read_text()
+        .joinpath('sel_run.py').read_text(),
+    Command.GET_SHOW_MODEL.value: pathlib.Path(TEMPLATES)
+        .joinpath('get_show_model.py').read_text()
 }
 
 DOCS = {
@@ -73,7 +76,7 @@ def main():
     st.header('Select a tutorial!')
 
     # set tabs
-    tab1, tab2 = st.tabs(["CAD interactions", "Cloud interactions"])
+    tab1, tab2, tab3 = st.tabs(["CAD Interactions", "Cloud Interactions", "Get and Show a Model"])
 
     # sidebar
     st.sidebar.markdown('## Editor Settings')
@@ -118,6 +121,19 @@ def main():
             font_size=font_size,
             theme=theme)
         exec(sel_script)
+
+    with tab3:
+        with st.expander(label='Docs', expanded=False):
+            st.markdown("""
+                Documentation!
+            """)
+        sel_script = st_ace(language="python", 
+            value=SCRIPTS['Get and Show a Model'], 
+            auto_update=auto_update,
+            font_size=font_size,
+            theme=theme)
+        exec(sel_script)
+
 
 if __name__ == '__main__':
     main()
