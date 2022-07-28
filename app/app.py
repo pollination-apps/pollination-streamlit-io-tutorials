@@ -5,7 +5,7 @@ from streamlit_ace import st_ace, THEMES
 from pollination_streamlit.selectors import get_api_client
 from pollination_streamlit_io import ( 
     get_geometry, send_geometry, get_hbjson, send_hbjson,
-    auth_user, select_account, select_project, select_recipe, 
+    select_account, select_project, select_recipe, 
     select_run, select_study )
 
 st.set_page_config(
@@ -125,7 +125,15 @@ def main():
     with tab3:
         with st.expander(label='Docs', expanded=False):
             st.markdown("""
-                Documentation!
+                This example shows how to use get_hbjson from pollintion_streamlit_io to
+                get an hbjson model and display it in the browser using viewer from
+                pollination_streamlit_viewer.
+
+                This app uses the on_change argument on get_hbjson to create the vtkjs file
+                whenever a new file is provided to the app.
+
+                The viewer isn't displaying at the moment I believe because st.ace can't
+                access the container's filesystem.
             """)
         sel_script = st_ace(language="python", 
             value=SCRIPTS['Get and Show a Model'], 
