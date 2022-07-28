@@ -22,21 +22,6 @@ if user and 'username' in user:
         st.json(project or '{}', expanded=False)
 
     if project and 'name' in project:
-        st.subheader('Selected ' + project['name'] + ', select a recipe:')
-
-        rcol1, rcol2 = st.columns(2)
-
-        with rcol1:
-            recipe = select_recipe(
-                'select-recipe',
-                api_client,
-                project_name=project['name'],
-                project_owner=user['username']
-            )
-        with rcol2:
-            st.json(recipe or '{}', expanded=False)
-    
-    if project and 'name' in project:
         st.subheader('Select a study:')
 
         scol1, scol2 = st.columns(2)
@@ -61,7 +46,7 @@ if user and 'username' in user:
                     'select-run',
                     api_client,
                     project_name=project['name'],
-                    project_owner=owner,
+                    project_owner=user['username'],
                     job_id=study['id']
                 )
 

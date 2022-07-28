@@ -19,21 +19,6 @@ if user and 'username' in user:
         )
     with pcol2:
         st.json(project or '{}', expanded=False)
-
-    if project and 'name' in project:
-        st.subheader('Selected ' + project['name'] + ', select a recipe:')
-
-        rcol1, rcol2 = st.columns(2)
-
-        with rcol1:
-            recipe = select_recipe(
-                'select-recipe',
-                api_client,
-                project_name=project['name'],
-                project_owner=user['username']
-            )
-        with rcol2:
-            st.json(recipe or '{}', expanded=False)
     
     if project and 'name' in project:
         st.subheader('Select a study:')
