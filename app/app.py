@@ -27,6 +27,7 @@ class Command(Enum):
     SEND_MODEL = 'Send Model'
     GET_GEOMETRY = 'Get Geometry'
     SEND_GEOMETRY = 'Send Geometry'
+    SEND_RESULTS = 'Send Results'
     SEL_ACCOUNT = 'Select Account'
     SEL_PROJECT = 'Select Project'
     SEL_RECIPE = 'Select Recipe'
@@ -43,6 +44,8 @@ SCRIPTS = {
         .joinpath('get_geometry.py').read_text(),
     Command.SEND_GEOMETRY.value: pathlib.Path(TEMPLATES)
         .joinpath('send_geometry.py').read_text(),
+    Command.SEND_RESULTS.value: pathlib.Path(TEMPLATES)
+        .joinpath('send_results.py').read_text(),
     Command.SEL_ACCOUNT.value: pathlib.Path(TEMPLATES)
         .joinpath('sel_account.py').read_text(),
     Command.SEL_PROJECT.value: pathlib.Path(TEMPLATES)
@@ -62,6 +65,7 @@ DOCS = {
     Command.SEND_MODEL.value: send_hbjson.__doc__,
     Command.GET_GEOMETRY.value: get_geometry.__doc__,
     Command.SEND_GEOMETRY.value: send_geometry.__doc__,
+    Command.SEND_RESULTS.value: send_geometry.__doc__,
     Command.SEL_ACCOUNT.value: select_account.__doc__,
     Command.SEL_PROJECT.value: select_project.__doc__,
     Command.SEL_RECIPE.value: select_recipe.__doc__,
@@ -96,7 +100,8 @@ def main():
             (Command.SEND_MODEL.value, 
             Command.GET_MODEL.value,
             Command.SEND_GEOMETRY.value, 
-            Command.GET_GEOMETRY.value))
+            Command.GET_GEOMETRY.value,
+            Command.SEND_RESULTS.value))
         with st.expander(label='Docs', expanded=False):
             st.markdown(DOCS[mod_option])
         mod_script = st_ace(language="python", 
