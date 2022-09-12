@@ -33,6 +33,7 @@ class Command(Enum):
     SEL_RECIPE = 'Select Recipe'
     SEL_STUDY = 'Select Study'
     SEL_RUN = 'Select Run'
+    RUN_STUDY = 'Run Study'
     GET_SHOW_MODEL = 'Get and Show a Model'
 
 SCRIPTS = {
@@ -56,6 +57,8 @@ SCRIPTS = {
         .joinpath('sel_study.py').read_text(),
     Command.SEL_RUN.value: pathlib.Path(TEMPLATES)
         .joinpath('sel_run.py').read_text(),
+    Command.RUN_STUDY.value: pathlib.Path(TEMPLATES)
+        .joinpath('run_study.py').read_text(),
     Command.GET_SHOW_MODEL.value: pathlib.Path(TEMPLATES)
         .joinpath('get_show_model.py').read_text()
 }
@@ -70,6 +73,7 @@ DOCS = {
     Command.SEL_PROJECT.value: select_project.__doc__,
     Command.SEL_RECIPE.value: select_recipe.__doc__,
     Command.SEL_STUDY.value: select_study.__doc__,
+    Command.RUN_STUDY.value: select_study.__doc__,
     Command.SEL_RUN.value: select_run.__doc__
 }
 
@@ -118,7 +122,8 @@ def main():
             Command.SEL_PROJECT.value,
             Command.SEL_RECIPE.value,
             Command.SEL_STUDY.value,
-            Command.SEL_RUN.value))
+            Command.SEL_RUN.value,
+            Command.RUN_STUDY.value))
         with st.expander(label='Docs', expanded=False):
             st.markdown(DOCS[sel_option])
         sel_script = st_ace(language="python", 
