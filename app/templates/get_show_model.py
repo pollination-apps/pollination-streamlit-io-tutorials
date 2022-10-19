@@ -1,21 +1,20 @@
 import json
-from pathlib import Path
+import pathlib
 
 import streamlit as st
 
 from honeybee.model import Model as HBModel
 from honeybee_vtk.model import Model as VTKModel
-
 from pollination_streamlit_viewer import viewer
 from pollination_streamlit_io import get_hbjson
 
 st.header("Get Model")
 
 if 'temp' not in st.session_state:
-    st.session_state.temp = Path('/tmp')
+    st.session_state.temp = pathlib.Path('/tmp')
     st.session_state.temp.mkdir(parents=True, exist_ok=True)
 
-def create_vtkjs(hbjson_path: Path):
+def create_vtkjs(hbjson_path: pathlib.Path):
     if not hbjson_path:
         return
     
@@ -36,7 +35,7 @@ def create_vtkjs(hbjson_path: Path):
     return vtkjs_file
 
 
-def show_model(hbjson_path: Path):
+def show_model(hbjson_path: pathlib.Path):
     """Render HBJSON."""
 
     vtkjs_name = f'{hbjson_path.stem}_vtkjs'
@@ -70,6 +69,6 @@ if st.session_state.get_hbjson is not None:
     st.subheader('Hbjson Content')
     if st.session_state.get_hbjson is not None:
         st.json(st.session_state.get_hbjson, expanded=False)
-        
+
 else:
     st.info('Load a model!')
