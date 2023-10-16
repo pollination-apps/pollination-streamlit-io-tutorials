@@ -7,6 +7,6 @@ api_client = get_api_client()
 
 st.header("Select Account")
 
-account = select_account('select-account', api_client) or ''
-if account is not None:
+account = select_account('select-account', api_client)
+if account:
     st.json(account, expanded=False)
