@@ -1,10 +1,15 @@
 import streamlit as st
 from pollination_streamlit.selectors import get_api_client
-from pollination_streamlit_io import (select_account, select_project,
-                                      select_recipe)
+from pollination_streamlit.api.recipes import RecipesAPI
+from pollination_streamlit_io import (select_account, recipe_inputs_form,
+                                      select_project, select_recipe)
+
+st.info('This app submits studies by using recipe_inputs_form component.')
 
 # get api_client from pollination
 api_client = get_api_client()
+# create a recipe api client
+recipe_api = RecipesAPI(api_client)
 
 account = select_account('select-account', api_client)
 
@@ -40,3 +45,11 @@ if account:
             )
         with rcol2:
             st.json(recipe or '{}', expanded=False)
+
+        if recipe:
+            study = recipe_inputs_form(key='st-study', 
+                                       api_client=api_client, 
+                                       recipe_filter=recipe,
+                                       project_name=project_name,
+                                       project_owner=project_owner,
+                                       study_name='my study')

@@ -6,10 +6,20 @@ import streamlit as st
 from streamlit_ace import st_ace, THEMES
 
 from pollination_streamlit_io import ( 
-    get_geometry, send_geometry, get_hbjson, send_hbjson,
-    select_account, select_project, select_recipe, 
-    select_run, select_study, select_cloud_artifact )
-from pollination_streamlit.selectors import get_api_client
+    get_geometry, 
+    send_geometry, 
+    get_hbjson, 
+    send_hbjson,
+    auth_user,
+    select_account, 
+    select_project, 
+    select_recipe, 
+    select_run, 
+    select_study, 
+    select_cloud_artifact, 
+    create_study,
+    recipe_inputs_form,
+    send_results )
 
 # needed for get_and_show_model.py
 import requests
@@ -36,36 +46,48 @@ st.sidebar.image(
     use_column_width=True
 )
 
-api_client = get_api_client()
-
 TEMPLATES = './templates'
 
 class Command(Enum):
     GET_MODEL = 'Get Model'
     SEND_MODEL = 'Send Model'
+    SEND_MODEL_FROM_HB = 'Send Model From HB'
     GET_GEOMETRY = 'Get Geometry'
     SEND_GEOMETRY = 'Send Geometry'
+    SEND_GEOMETRY_FROM_LB = 'Send Geometry From LB'
+    SEND_GEOMETRY_FROM_DICT = 'Send Geometry From Dict'
     SEND_RESULTS = 'Send Results'
+    AUTH_USER = 'Authenticated User'
     SEL_ACCOUNT = 'Select Account'
     SEL_PROJECT = 'Select Project'
     SEL_RECIPE = 'Select Recipe'
     SEL_STUDY = 'Select Study'
     SEL_RUN = 'Select Run'
-    RUN_STUDY = 'Run Study'
+    RUN_STUDY_BASIC = 'Create Study'
+    RUN_STUDY_INTERMEDIATE = 'Create Study by Recipe Form'
+    RUN_STUDY_ADVANCED = 'Create Study by Recipe Form (Advanced)'
     DOWNLOAD_ARTIFACT = 'Select and Download an Artifact'
     GET_SHOW_MODEL = 'Get and Show a Hbjson Model'
 
 SCRIPTS = {
     Command.GET_MODEL.value: pathlib.Path(TEMPLATES)
         .joinpath('get_model.py').read_text(),
+    Command.SEND_MODEL_FROM_HB.value: pathlib.Path(TEMPLATES)
+        .joinpath('send_model_from_hb.py').read_text(),
     Command.SEND_MODEL.value: pathlib.Path(TEMPLATES)
         .joinpath('send_model.py').read_text(),
     Command.GET_GEOMETRY.value: pathlib.Path(TEMPLATES)
         .joinpath('get_geometry.py').read_text(),
     Command.SEND_GEOMETRY.value: pathlib.Path(TEMPLATES)
         .joinpath('send_geometry.py').read_text(),
+    Command.SEND_GEOMETRY_FROM_LB.value: pathlib.Path(TEMPLATES)
+        .joinpath('send_geometry_from_lb.py').read_text(),
+    Command.SEND_GEOMETRY_FROM_DICT.value: pathlib.Path(TEMPLATES)
+        .joinpath('send_geometry_from_dict.py').read_text(),
     Command.SEND_RESULTS.value: pathlib.Path(TEMPLATES)
         .joinpath('send_results.py').read_text(),
+    Command.AUTH_USER.value: pathlib.Path(TEMPLATES)
+        .joinpath('auth_user.py').read_text(),
     Command.SEL_ACCOUNT.value: pathlib.Path(TEMPLATES)
         .joinpath('sel_account.py').read_text(),
     Command.SEL_PROJECT.value: pathlib.Path(TEMPLATES)
@@ -76,8 +98,12 @@ SCRIPTS = {
         .joinpath('sel_study.py').read_text(),
     Command.SEL_RUN.value: pathlib.Path(TEMPLATES)
         .joinpath('sel_run.py').read_text(),
-    Command.RUN_STUDY.value: pathlib.Path(TEMPLATES)
-        .joinpath('run_study.py').read_text(),
+    Command.RUN_STUDY_BASIC.value: pathlib.Path(TEMPLATES)
+        .joinpath('run_study_basic.py').read_text(),
+    Command.RUN_STUDY_INTERMEDIATE.value: pathlib.Path(TEMPLATES)
+        .joinpath('run_study_intermediate.py').read_text(),
+    Command.RUN_STUDY_ADVANCED.value: pathlib.Path(TEMPLATES)
+        .joinpath('run_study_advanced.py').read_text(),
     Command.DOWNLOAD_ARTIFACT.value: pathlib.Path(TEMPLATES)
         .joinpath('download_artifact.py').read_text(),
     Command.GET_SHOW_MODEL.value: pathlib.Path(TEMPLATES)
@@ -87,19 +113,24 @@ SCRIPTS = {
 DOCS = {
     Command.GET_MODEL.value: get_hbjson.__doc__,
     Command.SEND_MODEL.value: send_hbjson.__doc__,
+    Command.SEND_MODEL_FROM_HB.value: send_hbjson.__doc__,
     Command.GET_GEOMETRY.value: get_geometry.__doc__,
     Command.SEND_GEOMETRY.value: send_geometry.__doc__,
-    Command.SEND_RESULTS.value: send_geometry.__doc__,
+    Command.SEND_GEOMETRY_FROM_LB.value: get_geometry.__doc__,
+    Command.SEND_GEOMETRY_FROM_DICT.value: send_geometry.__doc__,
+    Command.SEND_RESULTS.value: send_results.__doc__,
+    Command.AUTH_USER.value: auth_user.__doc__,
     Command.SEL_ACCOUNT.value: select_account.__doc__,
     Command.SEL_PROJECT.value: select_project.__doc__,
     Command.SEL_RECIPE.value: select_recipe.__doc__,
     Command.SEL_STUDY.value: select_study.__doc__,
-    Command.RUN_STUDY.value: select_study.__doc__,
+    Command.RUN_STUDY_BASIC.value: create_study.__doc__,
+    Command.RUN_STUDY_INTERMEDIATE.value: recipe_inputs_form.__doc__,
+    Command.RUN_STUDY_ADVANCED.value: recipe_inputs_form.__doc__,
     Command.SEL_RUN.value: select_run.__doc__,
     Command.DOWNLOAD_ARTIFACT.value: select_cloud_artifact.__doc__,
     Command.GET_SHOW_MODEL.value: viewer.__doc__
 }
-
 
 def main():
     """Learning doing."""
@@ -125,8 +156,11 @@ def main():
         mod_option = st.selectbox(
             'Select a script to test',
             (Command.SEND_MODEL.value, 
+            Command.SEND_MODEL_FROM_HB.value, 
             Command.GET_MODEL.value,
             Command.SEND_GEOMETRY.value, 
+            Command.SEND_GEOMETRY_FROM_LB.value, 
+            Command.SEND_GEOMETRY_FROM_DICT.value, 
             Command.GET_GEOMETRY.value,
             Command.SEND_RESULTS.value))
         with st.expander(label='Docs', expanded=False):
@@ -141,13 +175,16 @@ def main():
     with tab2:
         sel_option = st.selectbox(
             'Select a script to test',
-            (Command.SEL_ACCOUNT.value, 
+            (Command.AUTH_USER.value,
+            Command.SEL_ACCOUNT.value, 
             Command.SEL_PROJECT.value,
             Command.SEL_RECIPE.value,
             Command.SEL_STUDY.value,
             Command.SEL_RUN.value,
-            Command.RUN_STUDY.value,
-            Command.DOWNLOAD_ARTIFACT.value))
+            Command.RUN_STUDY_BASIC.value,
+            Command.DOWNLOAD_ARTIFACT.value,
+            Command.RUN_STUDY_INTERMEDIATE.value,
+            Command.RUN_STUDY_ADVANCED.value))
         with st.expander(label='Docs', expanded=False):
             st.markdown(DOCS[sel_option])
         sel_script = st_ace(language="python", 

@@ -1,21 +1,12 @@
 import streamlit as st
 from pollination_streamlit.selectors import get_api_client
-from pollination_streamlit_io import auth_user, select_account
+from pollination_streamlit_io import select_account
 
-# in this tutorial, the api_client is taken from app.py
-# typically you would create the api_client as shown below
-# api_client = get_api_client()
+# get api_client from pollination
+api_client = get_api_client()
 
-st.header("Authenticated User")
+st.header("Select Account")
 
-acol1, acol2 = st.columns(2)
-
-with acol1:
-    user = auth_user('auth-user', api_client)
-    if user is not None:
-        st.json(user, expanded=False)
-
-with acol2:
-    account = select_account('select-account', api_client) or ''
-    if account is not None and 'username' in account:
-        st.json(account, expanded=False)
+account = select_account('select-account', api_client) or ''
+if account is not None:
+    st.json(account, expanded=False)

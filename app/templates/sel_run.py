@@ -1,15 +1,17 @@
 import streamlit as st
 from pollination_streamlit.selectors import get_api_client
-from pollination_streamlit_io import auth_user, select_account
+from pollination_streamlit_io import (select_account, select_account,
+                                      select_project, select_study, 
+                                      select_run)
+# get api_client from pollination
+api_client = get_api_client()
 
-# in this tutorial, the api_client is taken from app.py
-# typically you would create the api_client as shown below
-# api_client = get_api_client()
+account = select_account('select-account', api_client)
 
-user = auth_user('auth-user', api_client)
-
-if user and 'username' in user:
-    st.subheader('Hi ' + user['username'] + ', select a project:')
+if account:
+    # if it is an organization it uses account_name otherwise username
+    project_owner = account.get('username') or account.get('account_name')
+    st.subheader(f'Hi {project_owner}! Select a project:')
 
     pcol1, pcol2 = st.columns(2)
 
@@ -17,12 +19,14 @@ if user and 'username' in user:
         project = select_project(
             'select-project',
             api_client,
-            project_owner=user['username']
+            project_owner=project_owner
         )
     with pcol2:
         st.json(project or '{}', expanded=False)
 
-    if project and 'name' in project:
+    if project:
+        # get project name
+        project_name = project.get('name')
         st.subheader('Select a study:')
 
         scol1, scol2 = st.columns(2)
@@ -31,14 +35,15 @@ if user and 'username' in user:
             study = select_study(
                 'select-study',
                 api_client,
-                project_name=project['name'],
-                project_owner=user['username']
+                project_name=project_name,
+                project_owner=project_owner
             )
         with scol2:
             st.json(study or '{}', expanded=False)
         
-        if study and 'id' in study:
-            st.subheader('Select a run for study ' + study['id'] + ' :')
+        if study:
+            study_id = study.get('id')
+            st.subheader(f'Select a run for study {study_id}:')
 
             runcol1, runcol2 = st.columns(2)
 
@@ -46,9 +51,9 @@ if user and 'username' in user:
                 run = select_run(
                     'select-run',
                     api_client,
-                    project_name=project['name'],
-                    project_owner=user['username'],
-                    job_id=study['id']
+                    project_name=project_name,
+                    project_owner=project_owner,
+                    job_id=study_id
                 )
 
             with runcol2:

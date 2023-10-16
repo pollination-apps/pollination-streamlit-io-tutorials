@@ -1,15 +1,16 @@
 import streamlit as st
 from pollination_streamlit.selectors import get_api_client
-from pollination_streamlit_io import auth_user, select_project
+from pollination_streamlit_io import select_account, select_project
 
-# in this tutorial, the api_client is taken from app.py
-# typically you would create the api_client as shown below
-# api_client = get_api_client()
+# get api_client from pollination
+api_client = get_api_client()
 
-user = auth_user('auth-user', api_client)
+account = select_account('select-account', api_client)
 
-if user and 'username' in user:
-    st.subheader('Hi ' + user['username'] + ', select a project:')
+if account:
+    # if it is an organization it uses account_name otherwise username
+    project_owner = account.get('username') or account.get('account_name')
+    st.subheader(f'Hi {project_owner}! Select a project:')
 
     pcol1, pcol2 = st.columns(2)
 
@@ -17,7 +18,7 @@ if user and 'username' in user:
         project = select_project(
             'select-project',
             api_client,
-            project_owner=user['username']
+            project_owner=project_owner
         )
     with pcol2:
         st.json(project or '{}', expanded=False)
