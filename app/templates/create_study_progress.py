@@ -6,7 +6,7 @@ from pollination_streamlit_io import create_study
 # typically you would create the api_client as shown below
 # api_client = get_api_client()
 
-study = create_study(key='my-pollination-study', 
+study = create_study(key='my-study-progress', 
     api_client=api_client)
 study.progress_report(refresh_interval=300, 
                       show_status_label=True,
