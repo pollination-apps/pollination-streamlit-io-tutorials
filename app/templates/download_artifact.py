@@ -1,18 +1,14 @@
 """Download files from Pollination jobs aka studies."""
-import json
-import pathlib
 import streamlit as st
 from pollination_streamlit.selectors import get_api_client
 from pollination_streamlit_io import (select_account, 
                                       select_cloud_artifact, 
                                       select_project, 
-                                      select_recipe, 
-                                      select_study, select_run)
+                                      select_study)
 
-import requests
-
-# get api_client from pollination
-api_client = get_api_client()
+# in this tutorial, the api_client is taken from app.py
+# typically you would create the api_client as shown below
+# api_client = get_api_client()
 
 account = select_account('select-account', api_client)
 

@@ -3,8 +3,9 @@ from pollination_streamlit.selectors import get_api_client
 from pollination_streamlit_io import (select_account, select_account,
                                       select_project, select_study, 
                                       select_run)
-# get api_client from pollination
-api_client = get_api_client()
+# in this tutorial, the api_client is taken from app.py
+# typically you would create the api_client as shown below
+# api_client = get_api_client()
 
 account = select_account('select-account', api_client)
 

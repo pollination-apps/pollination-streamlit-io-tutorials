@@ -8,3 +8,7 @@ from pollination_streamlit_io import create_study
 
 study = create_study(key='my-pollination-study', 
     api_client=api_client)
+study.progress_report(refresh_interval=300, 
+                      show_status_label=True,
+                      color='#eb2126',
+                      show_output=True)

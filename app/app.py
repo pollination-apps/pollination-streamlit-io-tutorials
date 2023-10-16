@@ -36,6 +36,8 @@ st.set_page_config(
     initial_sidebar_state='collapsed',
 )
 
+from pollination_streamlit.selectors import get_api_client
+
 # needed for get_and_show_model.py
 # set_page_config needs to be called prior to this import
 from templates.get_show_model import create_vtkjs, show_model
@@ -45,6 +47,9 @@ st.sidebar.image(
     '_pollination_brandmark-p-500.png',
     use_column_width=True
 )
+
+# get api_client from pollination
+api_client = get_api_client()
 
 TEMPLATES = './templates'
 
@@ -64,9 +69,11 @@ class Command(Enum):
     SEL_STUDY = 'Select Study'
     SEL_RUN = 'Select Run'
     RUN_STUDY_BASIC = 'Create Study'
+    RUN_STUDY_PROGRESS = 'Study Progress'
     RUN_STUDY_INTERMEDIATE = 'Create Study by Recipe Form'
     RUN_STUDY_ADVANCED = 'Create Study by Recipe Form (Advanced)'
     DOWNLOAD_ARTIFACT = 'Select and Download an Artifact'
+    GET_SHOW_RESULTS = 'Get and Show a Study Result (VSF)'
     GET_SHOW_MODEL = 'Get and Show a Hbjson Model'
 
 SCRIPTS = {
@@ -100,12 +107,16 @@ SCRIPTS = {
         .joinpath('sel_run.py').read_text(),
     Command.RUN_STUDY_BASIC.value: pathlib.Path(TEMPLATES)
         .joinpath('run_study_basic.py').read_text(),
+    Command.RUN_STUDY_PROGRESS.value: pathlib.Path(TEMPLATES)
+        .joinpath('create_study_progress.py').read_text(),
     Command.RUN_STUDY_INTERMEDIATE.value: pathlib.Path(TEMPLATES)
         .joinpath('run_study_intermediate.py').read_text(),
     Command.RUN_STUDY_ADVANCED.value: pathlib.Path(TEMPLATES)
         .joinpath('run_study_advanced.py').read_text(),
     Command.DOWNLOAD_ARTIFACT.value: pathlib.Path(TEMPLATES)
         .joinpath('download_artifact.py').read_text(),
+    Command.GET_SHOW_RESULTS.value: pathlib.Path(TEMPLATES)
+        .joinpath('visualize_study_results.py').read_text(),
     Command.GET_SHOW_MODEL.value: pathlib.Path(TEMPLATES)
         .joinpath('get_show_model.py').read_text()
 }
@@ -125,10 +136,12 @@ DOCS = {
     Command.SEL_RECIPE.value: select_recipe.__doc__,
     Command.SEL_STUDY.value: select_study.__doc__,
     Command.RUN_STUDY_BASIC.value: create_study.__doc__,
+    Command.RUN_STUDY_PROGRESS.value: create_study.__doc__,
     Command.RUN_STUDY_INTERMEDIATE.value: recipe_inputs_form.__doc__,
     Command.RUN_STUDY_ADVANCED.value: recipe_inputs_form.__doc__,
     Command.SEL_RUN.value: select_run.__doc__,
     Command.DOWNLOAD_ARTIFACT.value: select_cloud_artifact.__doc__,
+    Command.GET_SHOW_RESULTS.value: viewer.__doc__,
     Command.GET_SHOW_MODEL.value: viewer.__doc__
 }
 
@@ -182,6 +195,7 @@ def main():
             Command.SEL_STUDY.value,
             Command.SEL_RUN.value,
             Command.RUN_STUDY_BASIC.value,
+            Command.RUN_STUDY_PROGRESS.value,
             Command.DOWNLOAD_ARTIFACT.value,
             Command.RUN_STUDY_INTERMEDIATE.value,
             Command.RUN_STUDY_ADVANCED.value))
@@ -197,11 +211,12 @@ def main():
     with tab3:
         viewer_option = st.selectbox(
             'Select a script to test',
-            ([Command.GET_SHOW_MODEL.value]))
+            ([Command.GET_SHOW_RESULTS.value, \
+              Command.GET_SHOW_MODEL.value]))
         with st.expander(label='Docs', expanded=False):
             st.markdown(DOCS[viewer_option])
         viewer_script = st_ace(language="python", 
-            value=SCRIPTS[Command.GET_SHOW_MODEL.value], 
+            value=SCRIPTS[viewer_option], 
             auto_update=auto_update,
             font_size=font_size,
             theme=theme)
